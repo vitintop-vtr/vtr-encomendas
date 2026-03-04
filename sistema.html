@@ -6,17 +6,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>VTR ENCOMENDAS</title>
+<title>VTR ENCOMENDAS | Sistema</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 font-family:Segoe UI,Arial;
@@ -36,7 +32,7 @@ margin-bottom:30px;
 }
 
 .header img{
-height:120px;
+height:150px;
 }
 
 .dashboard{
@@ -69,7 +65,6 @@ border-radius:14px;
 .module input,
 .module select,
 .module textarea{
-
 width:100%;
 padding:8px;
 margin-bottom:8px;
@@ -77,11 +72,14 @@ border-radius:8px;
 border:none;
 background:rgba(255,255,255,0.1);
 color:#fff;
+}
 
+.module textarea{
+height:60px;
+resize:none;
 }
 
 .module button{
-
 width:100%;
 padding:8px;
 border:none;
@@ -89,42 +87,50 @@ border-radius:8px;
 background:#2563eb;
 color:#fff;
 cursor:pointer;
+}
 
+.devedores-painel{
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
+}
+
+.painel-vermelho{
+background:rgba(220,38,38,0.15);
+border:1px solid rgba(220,38,38,0.4);
+}
+
+.painel-verde{
+background:rgba(34,197,94,0.15);
+border:1px solid rgba(34,197,94,0.4);
 }
 
 .table-section{
-
 background:rgba(255,255,255,0.07);
 padding:20px;
 border-radius:14px;
-
+overflow-x:auto;
 }
 
 table{
-
 width:100%;
 border-collapse:collapse;
-
 }
 
 th,td{
-
 padding:8px;
 text-align:center;
 border-bottom:1px solid rgba(255,255,255,0.1);
 font-size:12px;
-
 }
 
 button.small{
-
 padding:4px 6px;
 font-size:10px;
 background:#dc2626;
 border:none;
 border-radius:6px;
 color:#fff;
-
 }
 
 </style>
@@ -136,24 +142,24 @@ color:#fff;
 <div class="app">
 
 <div class="header">
-<h1>VTR ENCOMENDAS</h1>
+<img src="logo.png">
 </div>
 
 <div class="dashboard">
 
 <div class="card">
 <h4>Faturamento</h4>
-<span id="fat">R$ 0</span>
+<span id="fat">R$ 0,00</span>
 </div>
 
 <div class="card">
 <h4>Gastos</h4>
-<span id="gast">R$ 0</span>
+<span id="gast">R$ 0,00</span>
 </div>
 
 <div class="card">
 <h4>Lucro</h4>
-<span id="lucro">R$ 0</span>
+<span id="lucro">R$ 0,00</span>
 </div>
 
 <div class="card">
@@ -163,55 +169,73 @@ color:#fff;
 
 </div>
 
+<div id="painelDev" class="devedores-painel painel-verde">
+<h4 id="tituloDev">✅ Nenhum devedor</h4>
+<div id="listaDev"></div>
+</div>
+
 <div class="modules">
 
 <div class="module">
 
 <h4>Nova Entrega</h4>
 
-<select id="cliente"></select>
+<form onsubmit="event.preventDefault(); salvarEntrega();">
 
-<input id="origem" placeholder="Origem">
+<select id="clienteSelect"></select>
 
-<input id="destino" placeholder="Destino">
+<input id="origem" placeholder="Origem" required>
 
-<input id="valor" type="number" placeholder="Valor">
+<input id="destino" placeholder="Destino" required>
+
+<input id="valor" type="number" placeholder="Valor" required>
 
 <textarea id="obs" placeholder="Observações"></textarea>
 
-<button onclick="salvarEntrega()">Salvar</button>
+<button type="submit">Salvar</button>
+
+</form>
 
 </div>
 
 <div class="module">
 
-<h4>Novo Cliente</h4>
+<h4>Cadastro Clientes</h4>
 
 <input id="novoCliente" placeholder="Nome Cliente">
 
-<button onclick="salvarCliente()">Salvar</button>
+<button onclick="salvarCliente()">Salvar Cliente</button>
 
 </div>
 
 <div class="module">
 
-<h4>Adicionar Gasto</h4>
+<h4>Gastos</h4>
+
+<select id="tipoGasto">
+
+<option>Combustível</option>
+<option>Manutenção</option>
+<option>Alimentação</option>
+<option>Outros</option>
+
+</select>
 
 <input id="valorGasto" type="number" placeholder="Valor">
 
-<button onclick="salvarGasto()">Adicionar</button>
+<button onclick="salvarGasto()">Adicionar Gasto</button>
 
 </div>
 
 <div class="module">
 
-<h4>Devedor</h4>
+<h4>Devedores</h4>
 
 <input id="nomeDev" placeholder="Nome">
 
 <input id="valorDev" type="number" placeholder="Valor">
 
-<button onclick="salvarDevedor()">Salvar</button>
+<button onclick="salvarDevedor()">Adicionar</button>
 
 </div>
 
@@ -233,6 +257,7 @@ color:#fff;
 <th>Destino</th>
 <th>Valor</th>
 <th>Obs</th>
+<th>Ação</th>
 
 </tr>
 
@@ -259,27 +284,37 @@ getDocs
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyB1bGJ4MgsVBw0Z00PBavyWCqRPidQBaQ4",
-authDomain: "vtr-encomendas.firebaseapp.com",
-projectId: "vtr-encomendas",
-storageBucket: "vtr-encomendas.firebasestorage.app",
-messagingSenderId: "385080380873",
-appId: "1:385080380873:web:3e86123ba4a9ce8fc1ac18"
+apiKey:"AIzaSyB1bGJ4MgsVBw0Z00PBavyWCqRPidQBaQ4",
+authDomain:"vtr-encomendas.firebaseapp.com",
+projectId:"vtr-encomendas",
+storageBucket:"vtr-encomendas.firebasestorage.app",
+messagingSenderId:"385080380873",
+appId:"1:385080380873:web:3e86123ba4a9ce8fc1ac18"
 
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
-let registros = [];
+let clientes=[];
+let registros=[];
+let devedores=[];
+
+async function salvarCliente(){
+
+await addDoc(collection(db,"clientes"),{nome:novoCliente.value});
+
+novoCliente.value="";
+carregarClientes();
+
+}
 
 async function salvarEntrega(){
 
 await addDoc(collection(db,"registros"),{
 
 data:new Date().toLocaleDateString("pt-BR"),
-cliente:cliente.value,
+cliente:clienteSelect.value,
 origem:origem.value,
 destino:destino.value,
 valor:parseFloat(valor.value),
@@ -287,21 +322,12 @@ obs:obs.value
 
 });
 
+origem.value="";
+destino.value="";
+valor.value="";
+obs.value="";
+
 carregar();
-
-}
-
-async function salvarCliente(){
-
-await addDoc(collection(db,"clientes"),{
-
-nome:novoCliente.value
-
-});
-
-novoCliente.value="";
-
-carregarClientes();
 
 }
 
@@ -310,7 +336,7 @@ async function salvarGasto(){
 await addDoc(collection(db,"registros"),{
 
 data:new Date().toLocaleDateString("pt-BR"),
-cliente:"Gasto",
+cliente:"Gasto - "+tipoGasto.value,
 origem:"-",
 destino:"-",
 valor:-Math.abs(parseFloat(valorGasto.value)),
@@ -319,7 +345,6 @@ obs:"-"
 });
 
 valorGasto.value="";
-
 carregar();
 
 }
@@ -336,19 +361,17 @@ valor:parseFloat(valorDev.value)
 nomeDev.value="";
 valorDev.value="";
 
+carregarDevedores();
+
 }
 
 async function carregar(){
 
 registros=[];
 
-const querySnapshot = await getDocs(collection(db,"registros"));
+const q=await getDocs(collection(db,"registros"));
 
-querySnapshot.forEach((doc)=>{
-
-registros.push(doc.data());
-
-});
+q.forEach(doc=>registros.push(doc.data()));
 
 atualizar();
 
@@ -356,15 +379,47 @@ atualizar();
 
 async function carregarClientes(){
 
-cliente.innerHTML="";
+clienteSelect.innerHTML="";
 
-const querySnapshot = await getDocs(collection(db,"clientes"));
+const q=await getDocs(collection(db,"clientes"));
 
-querySnapshot.forEach((doc)=>{
+q.forEach(doc=>{
 
-cliente.innerHTML+=`<option>${doc.data().nome}</option>`;
+clienteSelect.innerHTML+=`<option>${doc.data().nome}</option>`;
 
 });
+
+}
+
+async function carregarDevedores(){
+
+devedores=[];
+
+const q=await getDocs(collection(db,"devedores"));
+
+q.forEach(doc=>devedores.push(doc.data()));
+
+listaDev.innerHTML="";
+
+devedores.forEach(d=>{
+
+listaDev.innerHTML+=d.nome+" - R$ "+d.valor.toFixed(2)+"<br>";
+
+});
+
+totalDev.innerText=devedores.length;
+
+if(devedores.length==0){
+
+painelDev.className="devedores-painel painel-verde";
+tituloDev.innerText="✅ Nenhum devedor";
+
+}else{
+
+painelDev.className="devedores-painel painel-vermelho";
+tituloDev.innerText="⚠ Devedores em aberto";
+
+}
 
 }
 
@@ -390,6 +445,7 @@ tabela.innerHTML+=`
 <td>${r.destino}</td>
 <td>R$ ${r.valor.toFixed(2)}</td>
 <td>${r.obs}</td>
+<td></td>
 
 </tr>
 
@@ -405,11 +461,12 @@ lucro.innerText="R$ "+(f-g).toFixed(2);
 
 carregar();
 carregarClientes();
+carregarDevedores();
 
-window.salvarEntrega = salvarEntrega;
-window.salvarCliente = salvarCliente;
-window.salvarGasto = salvarGasto;
-window.salvarDevedor = salvarDevedor;
+window.salvarEntrega=salvarEntrega;
+window.salvarCliente=salvarCliente;
+window.salvarGasto=salvarGasto;
+window.salvarDevedor=salvarDevedor;
 
 </script>
 
