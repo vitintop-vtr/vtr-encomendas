@@ -26,14 +26,8 @@ margin:auto;
 padding:30px;
 }
 
-.header{
-text-align:center;
-margin-bottom:30px;
-}
-
-.header img{
-height:150px;
-}
+.header{text-align:center;margin-bottom:30px;}
+.header img{height:150px;}
 
 .dashboard{
 display:grid;
@@ -62,9 +56,7 @@ padding:20px;
 border-radius:14px;
 }
 
-.module input,
-.module select,
-.module textarea{
+.module input,.module select,.module textarea{
 width:100%;
 padding:8px;
 margin-bottom:8px;
@@ -74,10 +66,7 @@ background:rgba(255,255,255,0.1);
 color:#fff;
 }
 
-.module textarea{
-height:60px;
-resize:none;
-}
+.module textarea{height:60px;}
 
 .module button{
 width:100%;
@@ -89,11 +78,16 @@ color:#fff;
 cursor:pointer;
 }
 
-.devedores-painel{
-padding:15px;
-border-radius:12px;
-margin-bottom:20px;
+button.small{
+padding:4px 6px;
+font-size:10px;
+background:#dc2626;
+border:none;
+border-radius:6px;
+color:#fff;
 }
+
+.devedores-painel{padding:15px;border-radius:12px;margin-bottom:20px;}
 
 .painel-vermelho{
 background:rgba(220,38,38,0.15);
@@ -109,7 +103,6 @@ border:1px solid rgba(34,197,94,0.4);
 background:rgba(255,255,255,0.07);
 padding:20px;
 border-radius:14px;
-overflow-x:auto;
 }
 
 table{
@@ -122,15 +115,6 @@ padding:8px;
 text-align:center;
 border-bottom:1px solid rgba(255,255,255,0.1);
 font-size:12px;
-}
-
-button.small{
-padding:4px 6px;
-font-size:10px;
-background:#dc2626;
-border:none;
-border-radius:6px;
-color:#fff;
 }
 
 </style>
@@ -149,17 +133,17 @@ color:#fff;
 
 <div class="card">
 <h4>Faturamento</h4>
-<span id="fat">R$ 0,00</span>
+<span id="fat">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Gastos</h4>
-<span id="gast">R$ 0,00</span>
+<span id="gast">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Lucro</h4>
-<span id="lucro">R$ 0,00</span>
+<span id="lucro">R$ 0</span>
 </div>
 
 <div class="card">
@@ -180,21 +164,17 @@ color:#fff;
 
 <h4>Nova Entrega</h4>
 
-<form onsubmit="event.preventDefault(); salvarEntrega();">
-
 <select id="clienteSelect"></select>
 
-<input id="origem" placeholder="Origem" required>
+<input id="origem" placeholder="Origem">
 
-<input id="destino" placeholder="Destino" required>
+<input id="destino" placeholder="Destino">
 
-<input id="valor" type="number" placeholder="Valor" required>
+<input id="valor" type="number" placeholder="Valor">
 
 <textarea id="obs" placeholder="Observações"></textarea>
 
-<button type="submit">Salvar</button>
-
-</form>
+<button onclick="salvarEntrega()">Salvar</button>
 
 </div>
 
@@ -204,7 +184,7 @@ color:#fff;
 
 <input id="novoCliente" placeholder="Nome Cliente">
 
-<button onclick="salvarCliente()">Salvar Cliente</button>
+<button onclick="salvarCliente()">Salvar</button>
 
 </div>
 
@@ -213,17 +193,15 @@ color:#fff;
 <h4>Gastos</h4>
 
 <select id="tipoGasto">
-
 <option>Combustível</option>
 <option>Manutenção</option>
 <option>Alimentação</option>
 <option>Outros</option>
-
 </select>
 
 <input id="valorGasto" type="number" placeholder="Valor">
 
-<button onclick="salvarGasto()">Adicionar Gasto</button>
+<button onclick="salvarGasto()">Adicionar</button>
 
 </div>
 
@@ -250,7 +228,6 @@ color:#fff;
 <thead>
 
 <tr>
-
 <th>Data</th>
 <th>Cliente</th>
 <th>Origem</th>
@@ -258,7 +235,6 @@ color:#fff;
 <th>Valor</th>
 <th>Obs</th>
 <th>Ação</th>
-
 </tr>
 
 </thead>
@@ -279,7 +255,9 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs
+getDocs,
+deleteDoc,
+doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -296,18 +274,8 @@ appId:"1:385080380873:web:3e86123ba4a9ce8fc1ac18"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let clientes=[];
 let registros=[];
 let devedores=[];
-
-async function salvarCliente(){
-
-await addDoc(collection(db,"clientes"),{nome:novoCliente.value});
-
-novoCliente.value="";
-carregarClientes();
-
-}
 
 async function salvarEntrega(){
 
@@ -322,11 +290,6 @@ obs:obs.value
 
 });
 
-origem.value="";
-destino.value="";
-valor.value="";
-obs.value="";
-
 carregar();
 
 }
@@ -336,7 +299,7 @@ async function salvarGasto(){
 await addDoc(collection(db,"registros"),{
 
 data:new Date().toLocaleDateString("pt-BR"),
-cliente:"Gasto - "+tipoGasto.value,
+cliente:"Gasto",
 origem:"-",
 destino:"-",
 valor:-Math.abs(parseFloat(valorGasto.value)),
@@ -344,8 +307,15 @@ obs:"-"
 
 });
 
-valorGasto.value="";
 carregar();
+
+}
+
+async function salvarCliente(){
+
+await addDoc(collection(db,"clientes"),{nome:novoCliente.value});
+
+carregarClientes();
 
 }
 
@@ -358,8 +328,21 @@ valor:parseFloat(valorDev.value)
 
 });
 
-nomeDev.value="";
-valorDev.value="";
+carregarDevedores();
+
+}
+
+async function excluirRegistro(id){
+
+await deleteDoc(doc(db,"registros",id));
+
+carregar();
+
+}
+
+async function excluirDevedor(id){
+
+await deleteDoc(doc(db,"devedores",id));
 
 carregarDevedores();
 
@@ -371,23 +354,15 @@ registros=[];
 
 const q=await getDocs(collection(db,"registros"));
 
-q.forEach(doc=>registros.push(doc.data()));
-
-atualizar();
-
-}
-
-async function carregarClientes(){
-
-clienteSelect.innerHTML="";
-
-const q=await getDocs(collection(db,"clientes"));
-
 q.forEach(doc=>{
 
-clienteSelect.innerHTML+=`<option>${doc.data().nome}</option>`;
+let r=doc.data();
+r.id=doc.id;
+registros.push(r);
 
 });
+
+atualizar();
 
 }
 
@@ -397,13 +372,16 @@ devedores=[];
 
 const q=await getDocs(collection(db,"devedores"));
 
-q.forEach(doc=>devedores.push(doc.data()));
-
 listaDev.innerHTML="";
 
-devedores.forEach(d=>{
+q.forEach(doc=>{
 
-listaDev.innerHTML+=d.nome+" - R$ "+d.valor.toFixed(2)+"<br>";
+let d=doc.data();
+
+listaDev.innerHTML+=d.nome+" - R$ "+d.valor.toFixed(2)+
+` <button class="small" onclick="excluirDevedor('${doc.id}')">Excluir</button><br>`;
+
+devedores.push(d);
 
 });
 
@@ -423,10 +401,23 @@ tituloDev.innerText="⚠ Devedores em aberto";
 
 }
 
+async function carregarClientes(){
+
+clienteSelect.innerHTML="";
+
+const q=await getDocs(collection(db,"clientes"));
+
+q.forEach(doc=>{
+
+clienteSelect.innerHTML+=`<option>${doc.data().nome}</option>`;
+
+});
+
+}
+
 function atualizar(){
 
-let f=0;
-let g=0;
+let f=0,g=0;
 
 tabela.innerHTML="";
 
@@ -445,7 +436,7 @@ tabela.innerHTML+=`
 <td>${r.destino}</td>
 <td>R$ ${r.valor.toFixed(2)}</td>
 <td>${r.obs}</td>
-<td></td>
+<td><button class="small" onclick="excluirRegistro('${r.id}')">Excluir</button></td>
 
 </tr>
 
@@ -464,9 +455,11 @@ carregarClientes();
 carregarDevedores();
 
 window.salvarEntrega=salvarEntrega;
-window.salvarCliente=salvarCliente;
 window.salvarGasto=salvarGasto;
+window.salvarCliente=salvarCliente;
 window.salvarDevedor=salvarDevedor;
+window.excluirRegistro=excluirRegistro;
+window.excluirDevedor=excluirDevedor;
 
 </script>
 
