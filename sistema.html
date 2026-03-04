@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>VTR ENCOMENDAS | Sistema</title>
+<title>VTR ENCOMENDAS</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -36,7 +36,7 @@ margin-bottom:30px;
 }
 
 .header img{
-height:80px;
+height:120px;
 }
 
 .dashboard{
@@ -69,6 +69,7 @@ border-radius:14px;
 .module input,
 .module select,
 .module textarea{
+
 width:100%;
 padding:8px;
 margin-bottom:8px;
@@ -76,14 +77,11 @@ border-radius:8px;
 border:none;
 background:rgba(255,255,255,0.1);
 color:#fff;
-}
 
-.module textarea{
-height:60px;
-resize:none;
 }
 
 .module button{
+
 width:100%;
 padding:8px;
 border:none;
@@ -91,50 +89,42 @@ border-radius:8px;
 background:#2563eb;
 color:#fff;
 cursor:pointer;
-}
 
-.devedores-painel{
-padding:15px;
-border-radius:12px;
-margin-bottom:20px;
-}
-
-.painel-vermelho{
-background:rgba(220,38,38,0.15);
-border:1px solid rgba(220,38,38,0.4);
-}
-
-.painel-verde{
-background:rgba(34,197,94,0.15);
-border:1px solid rgba(34,197,94,0.4);
 }
 
 .table-section{
+
 background:rgba(255,255,255,0.07);
 padding:20px;
 border-radius:14px;
-overflow-x:auto;
+
 }
 
 table{
+
 width:100%;
 border-collapse:collapse;
+
 }
 
 th,td{
+
 padding:8px;
 text-align:center;
 border-bottom:1px solid rgba(255,255,255,0.1);
 font-size:12px;
+
 }
 
 button.small{
+
 padding:4px 6px;
 font-size:10px;
 background:#dc2626;
 border:none;
 border-radius:6px;
 color:#fff;
+
 }
 
 </style>
@@ -146,24 +136,24 @@ color:#fff;
 <div class="app">
 
 <div class="header">
-<img src="logo.png" style="height:150px;">
+<h1>VTR ENCOMENDAS</h1>
 </div>
 
 <div class="dashboard">
 
 <div class="card">
 <h4>Faturamento</h4>
-<span id="fat">R$ 0,00</span>
+<span id="fat">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Gastos</h4>
-<span id="gast">R$ 0,00</span>
+<span id="gast">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Lucro</h4>
-<span id="lucro">R$ 0,00</span>
+<span id="lucro">R$ 0</span>
 </div>
 
 <div class="card">
@@ -173,103 +163,57 @@ color:#fff;
 
 </div>
 
-<div id="painelDev" class="devedores-painel painel-verde">
-
-<h4 id="tituloDev">✅ Nenhum devedor</h4>
-
-<div id="listaDev"></div>
-
-</div>
-
 <div class="modules">
 
 <div class="module">
 
 <h4>Nova Entrega</h4>
 
-<form onsubmit="event.preventDefault(); salvarEntrega();">
+<select id="cliente"></select>
 
-<select id="clienteSelect"></select>
+<input id="origem" placeholder="Origem">
 
-<input id="origem" placeholder="Origem" required>
+<input id="destino" placeholder="Destino">
 
-<input id="destino" placeholder="Destino" required>
-
-<input id="valor" type="number" placeholder="Valor" required>
+<input id="valor" type="number" placeholder="Valor">
 
 <textarea id="obs" placeholder="Observações"></textarea>
 
-<button type="submit">Salvar</button>
-
-</form>
+<button onclick="salvarEntrega()">Salvar</button>
 
 </div>
 
 <div class="module">
 
-<h4>Cadastro Clientes</h4>
+<h4>Novo Cliente</h4>
 
-<form onsubmit="event.preventDefault(); salvarCliente();">
+<input id="novoCliente" placeholder="Nome Cliente">
 
-<input id="novoCliente" placeholder="Nome Cliente" required>
-
-<button type="submit">Salvar Cliente</button>
-
-</form>
-
-<button onclick="excluirCliente()">Excluir Selecionado</button>
+<button onclick="salvarCliente()">Salvar</button>
 
 </div>
 
 <div class="module">
 
-<h4>Gastos</h4>
+<h4>Adicionar Gasto</h4>
 
-<form onsubmit="event.preventDefault(); salvarGasto();">
+<input id="valorGasto" type="number" placeholder="Valor">
 
-<select id="tipoGasto">
-
-<option>Combustível</option>
-
-<option>Manutenção</option>
-
-<option>Alimentação</option>
-
-<option>Outros</option>
-
-</select>
-
-<input id="valorGasto" type="number" placeholder="Valor" required>
-
-<button type="submit">Adicionar Gasto</button>
-
-</form>
+<button onclick="salvarGasto()">Adicionar</button>
 
 </div>
 
 <div class="module">
 
-<h4>Devedores</h4>
+<h4>Devedor</h4>
 
-<form onsubmit="event.preventDefault(); salvarDevedor();">
+<input id="nomeDev" placeholder="Nome">
 
-<input id="nomeDev" placeholder="Nome" required>
+<input id="valorDev" type="number" placeholder="Valor">
 
-<input id="valorDev" type="number" placeholder="Valor" required>
-
-<button type="submit">Adicionar</button>
-
-</form>
+<button onclick="salvarDevedor()">Salvar</button>
 
 </div>
-
-</div>
-
-<div class="module" style="margin-bottom:20px;">
-
-<h4>Relatório</h4>
-
-<button onclick="gerarRelatorio()">Gerar Relatório Completo PDF</button>
 
 </div>
 
@@ -284,18 +228,11 @@ color:#fff;
 <tr>
 
 <th>Data</th>
-
 <th>Cliente</th>
-
 <th>Origem</th>
-
 <th>Destino</th>
-
 <th>Valor</th>
-
 <th>Obs</th>
-
-<th>Ação</th>
 
 </tr>
 
@@ -309,140 +246,138 @@ color:#fff;
 
 </div>
 
-<script>
+<script type="module">
 
-let clientes = JSON.parse(localStorage.getItem("vtr74_clientes")) || [];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-let registros = JSON.parse(localStorage.getItem("vtr74_registros")) || [];
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-let devedores = JSON.parse(localStorage.getItem("vtr74_devedores")) || [];
+const firebaseConfig = {
 
-function salvarLocal(){
+apiKey: "AIzaSyB1bGJ4MgsVBw0Z00PBavyWCqRPidQBaQ4",
+authDomain: "vtr-encomendas.firebaseapp.com",
+projectId: "vtr-encomendas",
+storageBucket: "vtr-encomendas.firebasestorage.app",
+messagingSenderId: "385080380873",
+appId: "1:385080380873:web:3e86123ba4a9ce8fc1ac18"
 
-localStorage.setItem("vtr74_clientes",JSON.stringify(clientes));
+};
 
-localStorage.setItem("vtr74_registros",JSON.stringify(registros));
+const app = initializeApp(firebaseConfig);
 
-localStorage.setItem("vtr74_devedores",JSON.stringify(devedores));
+const db = getFirestore(app);
 
-}
+let registros = [];
 
-function carregarClientes(){
+async function salvarEntrega(){
 
-clienteSelect.innerHTML="";
-
-clientes.forEach(c=>clienteSelect.innerHTML+=`<option>${c}</option>`);
-
-}
-
-function salvarCliente(){
-
-clientes.push(novoCliente.value);
-
-novoCliente.value="";
-
-salvarLocal();
-
-carregarClientes();
-
-}
-
-function excluirCliente(){
-
-clientes=clientes.filter(c=>c!==clienteSelect.value);
-
-salvarLocal();
-
-carregarClientes();
-
-}
-
-function salvarEntrega(){
-
-registros.push({
+await addDoc(collection(db,"registros"),{
 
 data:new Date().toLocaleDateString("pt-BR"),
-
-cliente:clienteSelect.value,
-
+cliente:cliente.value,
 origem:origem.value,
-
 destino:destino.value,
-
 valor:parseFloat(valor.value),
-
 obs:obs.value
 
 });
 
-origem.value=destino.value=valor.value=obs.value="";
-
-salvarLocal();
-
-atualizar();
+carregar();
 
 }
 
-function salvarGasto(){
+async function salvarCliente(){
 
-registros.push({
+await addDoc(collection(db,"clientes"),{
+
+nome:novoCliente.value
+
+});
+
+novoCliente.value="";
+
+carregarClientes();
+
+}
+
+async function salvarGasto(){
+
+await addDoc(collection(db,"registros"),{
 
 data:new Date().toLocaleDateString("pt-BR"),
-
-cliente:"Gasto - "+tipoGasto.value,
-
+cliente:"Gasto",
 origem:"-",
-
 destino:"-",
-
 valor:-Math.abs(parseFloat(valorGasto.value)),
-
 obs:"-"
 
 });
 
 valorGasto.value="";
 
-salvarLocal();
+carregar();
+
+}
+
+async function salvarDevedor(){
+
+await addDoc(collection(db,"devedores"),{
+
+nome:nomeDev.value,
+valor:parseFloat(valorDev.value)
+
+});
+
+nomeDev.value="";
+valorDev.value="";
+
+}
+
+async function carregar(){
+
+registros=[];
+
+const querySnapshot = await getDocs(collection(db,"registros"));
+
+querySnapshot.forEach((doc)=>{
+
+registros.push(doc.data());
+
+});
 
 atualizar();
 
 }
 
-function salvarDevedor(){
+async function carregarClientes(){
 
-devedores.push({nome:nomeDev.value,valor:parseFloat(valorDev.value)});
+cliente.innerHTML="";
 
-nomeDev.value=valorDev.value="";
+const querySnapshot = await getDocs(collection(db,"clientes"));
 
-salvarLocal();
+querySnapshot.forEach((doc)=>{
 
-atualizar();
+cliente.innerHTML+=`<option>${doc.data().nome}</option>`;
 
-}
-
-function excluirRegistro(i){
-
-registros.splice(i,1);
-
-salvarLocal();
-
-atualizar();
+});
 
 }
 
 function atualizar(){
 
-let f=0,g=0;
+let f=0;
+let g=0;
 
 tabela.innerHTML="";
 
-listaDev.innerHTML="";
-
-registros.forEach((r,i)=>{
+registros.forEach(r=>{
 
 if(r.valor>0)f+=r.valor;
-
 if(r.valor<0)g+=Math.abs(r.valor);
 
 tabela.innerHTML+=`
@@ -450,103 +385,33 @@ tabela.innerHTML+=`
 <tr>
 
 <td>${r.data}</td>
-
 <td>${r.cliente}</td>
-
 <td>${r.origem}</td>
-
 <td>${r.destino}</td>
-
 <td>R$ ${r.valor.toFixed(2)}</td>
-
 <td>${r.obs}</td>
 
-<td><button class="small" onclick="excluirRegistro(${i})">Excluir</button></td>
+</tr>
 
-</tr>`;
-
-});
-
-devedores.forEach(d=>{
-
-listaDev.innerHTML+=d.nome+" - R$ "+d.valor.toFixed(2)+"<br>";
+`;
 
 });
-
-if(devedores.length===0){
-
-painelDev.className="devedores-painel painel-verde";
-
-tituloDev.innerText="✅ Nenhum devedor";
-
-}else{
-
-painelDev.className="devedores-painel painel-vermelho";
-
-tituloDev.innerText="⚠ Devedores em Aberto";
-
-}
 
 fat.innerText="R$ "+f.toFixed(2);
-
 gast.innerText="R$ "+g.toFixed(2);
-
 lucro.innerText="R$ "+(f-g).toFixed(2);
 
-totalDev.innerText=devedores.length;
-
 }
 
-function gerarRelatorio(){
-
-const {jsPDF}=window.jspdf;
-
-const doc=new jsPDF();
-
-let y=15,total=0;
-
-doc.text("RELATÓRIO COMPLETO - VTR ENCOMENDAS",20,y);
-
-y+=10;
-
-registros.forEach(r=>{
-
-doc.text(r.data+" | "+r.cliente+" | "+r.origem+" → "+r.destino+" | R$ "+r.valor.toFixed(2),20,y);
-
-y+=6;
-
-total+=r.valor;
-
-if(y>260){doc.addPage();y=15;}
-
-});
-
-y+=10;
-
-doc.text("DEVEDORES:",20,y);
-
-y+=6;
-
-devedores.forEach(d=>{
-
-doc.text(d.nome+" - R$ "+d.valor.toFixed(2),20,y);
-
-y+=6;
-
-});
-
-doc.text("Resultado Final: R$ "+total.toFixed(2),20,y+10);
-
-doc.save("RELATORIO_COMPLETO_VTR_ENCOMENDAS.pdf");
-
-}
-
+carregar();
 carregarClientes();
 
-atualizar();
+window.salvarEntrega = salvarEntrega;
+window.salvarCliente = salvarCliente;
+window.salvarGasto = salvarGasto;
+window.salvarDevedor = salvarDevedor;
 
 </script>
 
 </body>
-
 </html>
