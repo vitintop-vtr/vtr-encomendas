@@ -4,33 +4,27 @@
 <head>
 
 <meta charset="UTF-8">
-<title>VTR ENCOMENDAS - Sistema</title>
+<title>VTR ENCOMENDAS</title>
 
 <style>
 
 body{
 background:#0b1a3a;
-color:white;
 font-family:Arial;
+color:white;
 margin:0;
 padding:40px;
 }
 
-.logo-topo{
-height:70px;
-margin-bottom:20px;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
+h1{
+margin-bottom:30px;
 }
 
 .card{
-background:#142a5c;
+background:#1a3268;
 padding:20px;
 margin-bottom:20px;
-border-radius:8px;
+border-radius:10px;
 }
 
 input, select{
@@ -42,31 +36,35 @@ border:none;
 
 button{
 padding:8px 15px;
-background:#1f5fff;
+background:#2e6cff;
 border:none;
-color:white;
-font-weight:bold;
 border-radius:5px;
+color:white;
 cursor:pointer;
 }
 
 button:hover{
-background:#0039cb;
+background:#1746b3;
 }
 
 table{
 width:100%;
-margin-top:15px;
+margin-top:10px;
 border-collapse:collapse;
 }
 
-th, td{
+th,td{
 padding:10px;
-border-bottom:1px solid #1f3c80;
+border-bottom:1px solid #2b4b91;
+text-align:left;
 }
 
-th{
-background:#1f3c80;
+.devedor{
+background:#a11a1a;
+}
+
+.ok{
+background:#1c7a2c;
 }
 
 </style>
@@ -75,22 +73,28 @@ background:#1f3c80;
 
 <body>
 
-<img src="ChatGPT Image 3 de mar. de 2026, 23_27_01.png" class="logo-topo">
-
-<div class="container">
-
 <h1>VTR ENCOMENDAS</h1>
+
+<div class="card">
+
+<h2>Cadastrar Cliente</h2>
+
+<input id="novoCliente" placeholder="Nome do cliente">
+<button onclick="addCliente()">Cadastrar</button>
+
+<select id="listaClientes"></select>
+
+</div>
 
 <div class="card">
 
 <h2>Nova Entrega</h2>
 
-<input type="text" id="cliente" placeholder="Cliente">
-<input type="text" id="origem" placeholder="Origem">
-<input type="text" id="destino" placeholder="Destino">
-<input type="number" id="valor" placeholder="Valor R$">
-
-<button onclick="adicionarEntrega()">Adicionar</button>
+<select id="clienteEntrega"></select>
+<input id="origem" placeholder="Origem">
+<input id="destino" placeholder="Destino">
+<input id="valor" placeholder="Valor">
+<button onclick="addEntrega()">Adicionar</button>
 
 </div>
 
@@ -110,7 +114,7 @@ background:#1f3c80;
 </tr>
 </thead>
 
-<tbody id="listaEntregas"></tbody>
+<tbody id="tabelaEntregas"></tbody>
 
 </table>
 
@@ -120,38 +124,53 @@ background:#1f3c80;
 
 <h2>Registrar Gasto</h2>
 
-<input type="text" id="tipoGasto" placeholder="Tipo">
-<input type="number" id="valorGasto" placeholder="Valor R$">
-
-<button onclick="adicionarGasto()">Adicionar</button>
-
-</div>
-
-<div class="card">
-
-<h2>Gastos</h2>
+<input id="tipoGasto" placeholder="Tipo">
+<input id="valorGasto" placeholder="Valor">
+<button onclick="addGasto()">Adicionar</button>
 
 <ul id="listaGastos"></ul>
 
 </div>
 
-</div>
-
 <script>
 
+let clientes = []
 let entregas = []
 let gastos = []
 
-function adicionarEntrega(){
+function atualizarClientes(){
 
-let cliente = document.getElementById("cliente").value
+let select = document.getElementById("clienteEntrega")
+select.innerHTML=""
+
+clientes.forEach(c=>{
+select.innerHTML += `<option>${c}</option>`
+})
+
+}
+
+function addCliente(){
+
+let nome = document.getElementById("novoCliente").value
+
+if(nome=="") return
+
+clientes.push(nome)
+
+atualizarClientes()
+
+document.getElementById("novoCliente").value=""
+
+}
+
+function addEntrega(){
+
+let cliente = document.getElementById("clienteEntrega").value
 let origem = document.getElementById("origem").value
 let destino = document.getElementById("destino").value
 let valor = document.getElementById("valor").value
 
-if(cliente == "" || valor == "") return
-
-entregas.push({cliente, origem, destino, valor})
+entregas.push({cliente,origem,destino,valor})
 
 renderEntregas()
 
@@ -159,9 +178,9 @@ renderEntregas()
 
 function renderEntregas(){
 
-let tabela = document.getElementById("listaEntregas")
+let tabela = document.getElementById("tabelaEntregas")
 
-tabela.innerHTML = ""
+tabela.innerHTML=""
 
 entregas.forEach((e,i)=>{
 
@@ -170,8 +189,8 @@ tabela.innerHTML += `
 <td>${e.cliente}</td>
 <td>${e.origem}</td>
 <td>${e.destino}</td>
-<td>R$ ${e.valor}</td>
-<td><button onclick="removerEntrega(${i})">Excluir</button></td>
+<td>${e.valor}</td>
+<td><button onclick="delEntrega(${i})">Excluir</button></td>
 </tr>
 `
 
@@ -179,7 +198,7 @@ tabela.innerHTML += `
 
 }
 
-function removerEntrega(i){
+function delEntrega(i){
 
 entregas.splice(i,1)
 
@@ -187,12 +206,10 @@ renderEntregas()
 
 }
 
-function adicionarGasto(){
+function addGasto(){
 
 let tipo = document.getElementById("tipoGasto").value
 let valor = document.getElementById("valorGasto").value
-
-if(tipo == "" || valor == "") return
 
 gastos.push({tipo,valor})
 
@@ -204,7 +221,7 @@ function renderGastos(){
 
 let lista = document.getElementById("listaGastos")
 
-lista.innerHTML = ""
+lista.innerHTML=""
 
 gastos.forEach(g=>{
 
