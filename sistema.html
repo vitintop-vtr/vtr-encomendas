@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,26 +8,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
+
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Segoe UI,Arial;background:#0f172a;color:#fff;}
 
-body::before{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:url("ChatGPT Image 3 de mar. de 2026, 23_27_01.png") center center no-repeat;
-background-size:500px;
-opacity:0.08;
-z-index:0;
+body{
+font-family:Segoe UI,Arial;
+background:#0f172a;
+color:#fff;
 }
 
-.aplicativo{
-position:relative;
-z-index:1;
-}
 body::after{
 content:"";
 position:fixed;
@@ -37,9 +25,22 @@ background:rgba(15,23,42,0.95);
 z-index:0;
 }
 
-.app{position:relative;z-index:1;max-width:1400px;margin:auto;padding:30px;}
-.header{text-align:center;margin-bottom:30px;}
-.header img{height:80px;}
+.app{
+position:relative;
+z-index:1;
+max-width:1400px;
+margin:auto;
+padding:30px;
+}
+
+.header{
+text-align:center;
+margin-bottom:30px;
+}
+
+.header img{
+height:80px;
+}
 
 .dashboard{
 display:grid;
@@ -68,7 +69,9 @@ padding:20px;
 border-radius:14px;
 }
 
-.module input,.module select,.module textarea{
+.module input,
+.module select,
+.module textarea{
 width:100%;
 padding:8px;
 margin-bottom:8px;
@@ -78,7 +81,10 @@ background:rgba(255,255,255,0.1);
 color:#fff;
 }
 
-.module textarea{height:60px;resize:none;}
+.module textarea{
+height:60px;
+resize:none;
+}
 
 .module button{
 width:100%;
@@ -114,7 +120,11 @@ border-radius:14px;
 overflow-x:auto;
 }
 
-table{width:100%;border-collapse:collapse;}
+table{
+width:100%;
+border-collapse:collapse;
+}
+
 th,td{
 padding:8px;
 text-align:center;
@@ -130,6 +140,7 @@ border:none;
 border-radius:6px;
 color:#fff;
 }
+
 </style>
 </head>
 
@@ -138,7 +149,7 @@ color:#fff;
 <div class="app">
 
 <div class="header">
-<img src="SUA_LOGO_AQUI.png">
+<img src="logo.png">
 </div>
 
 <div class="dashboard">
