@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
 <title>VTR ENCOMENDAS</title>
 
@@ -9,34 +11,36 @@
 body{
 margin:0;
 font-family:Arial;
-background:#0b1a3a;
-color:white;
+height:100vh;
 display:flex;
 align-items:center;
 justify-content:center;
-height:100vh;
-overflow:hidden;
-}
-
-.logo-bg{
-position:absolute;
-width:900px;
-opacity:0.15;
+background-image:url("ChatGPT Image 3 de mar. de 2026, 23_25_17.png");
+background-size:cover;
+background-position:center;
 }
 
 .login-box{
-background:#111c3a;
+background:rgba(0,0,0,0.6);
 padding:40px;
 border-radius:10px;
-width:300px;
 text-align:center;
-box-shadow:0 0 20px rgba(0,0,0,0.5);
+color:white;
+width:320px;
+}
+
+h1{
+margin-bottom:10px;
+}
+
+p{
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:10px;
-margin:10px 0;
+margin-bottom:15px;
 border:none;
 border-radius:5px;
 }
@@ -57,19 +61,20 @@ background:#0039cb;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<img src="ChatGPT Image 3 de mar. de 2026, 23_25_17.png" class="logo-bg">
-
 <div class="login-box">
 
-<h2>VTR ENCOMENDAS</h2>
+<h1>VTR ENCOMENDAS</h1>
+
 <p>Sistema de Gestão de Entregas</p>
 
-<input id="email" placeholder="Email">
-<input id="senha" type="password" placeholder="Senha">
+<input type="text" id="usuario" placeholder="Usuário">
+
+<input type="password" id="senha" placeholder="Senha">
 
 <button onclick="login()">ENTRAR</button>
 
@@ -79,16 +84,16 @@ background:#0039cb;
 
 function login(){
 
-let email=document.getElementById("email").value
-let senha=document.getElementById("senha").value
+let usuario = document.getElementById("usuario").value;
+let senha = document.getElementById("senha").value;
 
-if(email=="vtr" && senha=="31081996"){
+if(usuario === "vtr" && senha === "31081996"){
 
-window.location="sistema.html"
+window.location.href = "sistema.html";
 
 }else{
 
-alert("Login inválido")
+alert("Usuário ou senha incorretos");
 
 }
 
@@ -97,4 +102,5 @@ alert("Login inválido")
 </script>
 
 </body>
+
 </html>
