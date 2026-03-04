@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VTR ENCOMENDAS | 7.4 FINAL</title>
+
+<title>VTR ENCOMENDAS | Sistema</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
 body{
 font-family:Segoe UI,Arial;
@@ -17,17 +24,7 @@ background:#0f172a;
 color:#fff;
 }
 
-body::after{
-content:"";
-position:fixed;
-inset:0;
-background:rgba(15,23,42,0.95);
-z-index:0;
-}
-
 .app{
-position:relative;
-z-index:1;
 max-width:1400px;
 margin:auto;
 padding:30px;
@@ -100,7 +97,6 @@ cursor:pointer;
 padding:15px;
 border-radius:12px;
 margin-bottom:20px;
-transition:0.3s;
 }
 
 .painel-vermelho{
@@ -142,6 +138,7 @@ color:#fff;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -153,86 +150,161 @@ color:#fff;
 </div>
 
 <div class="dashboard">
-<div class="card"><h4>Faturamento</h4><span id="fat">R$ 0,00</span></div>
-<div class="card"><h4>Gastos</h4><span id="gast">R$ 0,00</span></div>
-<div class="card"><h4>Lucro</h4><span id="lucro">R$ 0,00</span></div>
-<div class="card"><h4>Devedores</h4><span id="totalDev">0</span></div>
+
+<div class="card">
+<h4>Faturamento</h4>
+<span id="fat">R$ 0,00</span>
+</div>
+
+<div class="card">
+<h4>Gastos</h4>
+<span id="gast">R$ 0,00</span>
+</div>
+
+<div class="card">
+<h4>Lucro</h4>
+<span id="lucro">R$ 0,00</span>
+</div>
+
+<div class="card">
+<h4>Devedores</h4>
+<span id="totalDev">0</span>
+</div>
+
 </div>
 
 <div id="painelDev" class="devedores-painel painel-verde">
+
 <h4 id="tituloDev">✅ Nenhum devedor</h4>
+
 <div id="listaDev"></div>
+
 </div>
 
 <div class="modules">
 
 <div class="module">
+
 <h4>Nova Entrega</h4>
+
 <form onsubmit="event.preventDefault(); salvarEntrega();">
+
 <select id="clienteSelect"></select>
+
 <input id="origem" placeholder="Origem" required>
+
 <input id="destino" placeholder="Destino" required>
+
 <input id="valor" type="number" placeholder="Valor" required>
+
 <textarea id="obs" placeholder="Observações"></textarea>
+
 <button type="submit">Salvar</button>
+
 </form>
+
 </div>
 
 <div class="module">
+
 <h4>Cadastro Clientes</h4>
+
 <form onsubmit="event.preventDefault(); salvarCliente();">
+
 <input id="novoCliente" placeholder="Nome Cliente" required>
+
 <button type="submit">Salvar Cliente</button>
+
 </form>
+
 <button onclick="excluirCliente()">Excluir Selecionado</button>
+
 </div>
 
 <div class="module">
+
 <h4>Gastos</h4>
+
 <form onsubmit="event.preventDefault(); salvarGasto();">
+
 <select id="tipoGasto">
+
 <option>Combustível</option>
+
 <option>Manutenção</option>
+
 <option>Alimentação</option>
+
 <option>Outros</option>
+
 </select>
+
 <input id="valorGasto" type="number" placeholder="Valor" required>
+
 <button type="submit">Adicionar Gasto</button>
+
 </form>
+
 </div>
 
 <div class="module">
+
 <h4>Devedores</h4>
+
 <form onsubmit="event.preventDefault(); salvarDevedor();">
+
 <input id="nomeDev" placeholder="Nome" required>
+
 <input id="valorDev" type="number" placeholder="Valor" required>
+
 <button type="submit">Adicionar</button>
+
 </form>
+
 </div>
 
 </div>
 
 <div class="module" style="margin-bottom:20px;">
+
 <h4>Relatório</h4>
+
 <button onclick="gerarRelatorio()">Gerar Relatório Completo PDF</button>
+
 </div>
 
 <div class="table-section">
+
 <h4>Movimentações</h4>
+
 <table>
+
 <thead>
+
 <tr>
+
 <th>Data</th>
+
 <th>Cliente</th>
+
 <th>Origem</th>
+
 <th>Destino</th>
+
 <th>Valor</th>
+
 <th>Obs</th>
+
 <th>Ação</th>
+
 </tr>
+
 </thead>
+
 <tbody id="tabela"></tbody>
+
 </table>
+
 </div>
 
 </div>
@@ -240,146 +312,241 @@ color:#fff;
 <script>
 
 let clientes = JSON.parse(localStorage.getItem("vtr74_clientes")) || [];
+
 let registros = JSON.parse(localStorage.getItem("vtr74_registros")) || [];
+
 let devedores = JSON.parse(localStorage.getItem("vtr74_devedores")) || [];
 
 function salvarLocal(){
+
 localStorage.setItem("vtr74_clientes",JSON.stringify(clientes));
+
 localStorage.setItem("vtr74_registros",JSON.stringify(registros));
+
 localStorage.setItem("vtr74_devedores",JSON.stringify(devedores));
+
 }
 
 function carregarClientes(){
+
 clienteSelect.innerHTML="";
+
 clientes.forEach(c=>clienteSelect.innerHTML+=`<option>${c}</option>`);
+
 }
 
 function salvarCliente(){
+
 clientes.push(novoCliente.value);
+
 novoCliente.value="";
+
 salvarLocal();
+
 carregarClientes();
+
 }
 
 function excluirCliente(){
+
 clientes=clientes.filter(c=>c!==clienteSelect.value);
+
 salvarLocal();
+
 carregarClientes();
+
 }
 
 function salvarEntrega(){
+
 registros.push({
+
 data:new Date().toLocaleDateString("pt-BR"),
+
 cliente:clienteSelect.value,
+
 origem:origem.value,
+
 destino:destino.value,
+
 valor:parseFloat(valor.value),
+
 obs:obs.value
+
 });
+
 origem.value=destino.value=valor.value=obs.value="";
+
 salvarLocal();
+
 atualizar();
+
 }
 
 function salvarGasto(){
+
 registros.push({
+
 data:new Date().toLocaleDateString("pt-BR"),
+
 cliente:"Gasto - "+tipoGasto.value,
+
 origem:"-",
+
 destino:"-",
+
 valor:-Math.abs(parseFloat(valorGasto.value)),
+
 obs:"-"
+
 });
+
 valorGasto.value="";
+
 salvarLocal();
+
 atualizar();
+
 }
 
 function salvarDevedor(){
+
 devedores.push({nome:nomeDev.value,valor:parseFloat(valorDev.value)});
+
 nomeDev.value=valorDev.value="";
+
 salvarLocal();
+
 atualizar();
+
 }
 
 function excluirRegistro(i){
+
 registros.splice(i,1);
+
 salvarLocal();
+
 atualizar();
+
 }
 
 function atualizar(){
 
 let f=0,g=0;
+
 tabela.innerHTML="";
+
 listaDev.innerHTML="";
 
 registros.forEach((r,i)=>{
+
 if(r.valor>0)f+=r.valor;
+
 if(r.valor<0)g+=Math.abs(r.valor);
 
 tabela.innerHTML+=`
+
 <tr>
+
 <td>${r.data}</td>
+
 <td>${r.cliente}</td>
+
 <td>${r.origem}</td>
+
 <td>${r.destino}</td>
+
 <td>R$ ${r.valor.toFixed(2)}</td>
+
 <td>${r.obs}</td>
+
 <td><button class="small" onclick="excluirRegistro(${i})">Excluir</button></td>
+
 </tr>`;
+
 });
 
 devedores.forEach(d=>{
+
 listaDev.innerHTML+=d.nome+" - R$ "+d.valor.toFixed(2)+"<br>";
+
 });
 
 if(devedores.length===0){
+
 painelDev.className="devedores-painel painel-verde";
+
 tituloDev.innerText="✅ Nenhum devedor";
+
 }else{
+
 painelDev.className="devedores-painel painel-vermelho";
+
 tituloDev.innerText="⚠ Devedores em Aberto";
+
 }
 
 fat.innerText="R$ "+f.toFixed(2);
+
 gast.innerText="R$ "+g.toFixed(2);
+
 lucro.innerText="R$ "+(f-g).toFixed(2);
+
 totalDev.innerText=devedores.length;
+
 }
 
 function gerarRelatorio(){
+
 const {jsPDF}=window.jspdf;
+
 const doc=new jsPDF();
+
 let y=15,total=0;
 
 doc.text("RELATÓRIO COMPLETO - VTR ENCOMENDAS",20,y);
+
 y+=10;
 
 registros.forEach(r=>{
+
 doc.text(r.data+" | "+r.cliente+" | "+r.origem+" → "+r.destino+" | R$ "+r.valor.toFixed(2),20,y);
+
 y+=6;
+
 total+=r.valor;
+
 if(y>260){doc.addPage();y=15;}
+
 });
 
 y+=10;
+
 doc.text("DEVEDORES:",20,y);
+
 y+=6;
 
 devedores.forEach(d=>{
+
 doc.text(d.nome+" - R$ "+d.valor.toFixed(2),20,y);
+
 y+=6;
+
 });
 
 doc.text("Resultado Final: R$ "+total.toFixed(2),20,y+10);
+
 doc.save("RELATORIO_COMPLETO_VTR_ENCOMENDAS.pdf");
+
 }
 
 carregarClientes();
+
 atualizar();
 
 </script>
 
 </body>
+
 </html>
