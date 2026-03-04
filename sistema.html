@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
 
 <meta charset="UTF-8">
+<title>VTR ENCOMENDAS - Sistema</title>
 
 <style>
 
@@ -20,6 +21,54 @@ height:70px;
 margin-bottom:20px;
 }
 
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:#142a5c;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+}
+
+input, select{
+padding:8px;
+margin:5px;
+border-radius:5px;
+border:none;
+}
+
+button{
+padding:8px 15px;
+background:#1f5fff;
+border:none;
+color:white;
+font-weight:bold;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0039cb;
+}
+
+table{
+width:100%;
+margin-top:15px;
+border-collapse:collapse;
+}
+
+th, td{
+padding:10px;
+border-bottom:1px solid #1f3c80;
+}
+
+th{
+background:#1f3c80;
+}
+
 </style>
 
 </head>
@@ -28,11 +77,144 @@ margin-bottom:20px;
 
 <img src="ChatGPT Image 3 de mar. de 2026, 23_27_01.png" class="logo-topo">
 
+<div class="container">
+
 <h1>VTR ENCOMENDAS</h1>
 
-<p>Sistema carregado com sucesso.</p>
+<div class="card">
 
-<p>Aqui será o painel de gestão.</p>
+<h2>Nova Entrega</h2>
+
+<input type="text" id="cliente" placeholder="Cliente">
+<input type="text" id="origem" placeholder="Origem">
+<input type="text" id="destino" placeholder="Destino">
+<input type="number" id="valor" placeholder="Valor R$">
+
+<button onclick="adicionarEntrega()">Adicionar</button>
+
+</div>
+
+<div class="card">
+
+<h2>Entregas</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Cliente</th>
+<th>Origem</th>
+<th>Destino</th>
+<th>Valor</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="listaEntregas"></tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Registrar Gasto</h2>
+
+<input type="text" id="tipoGasto" placeholder="Tipo">
+<input type="number" id="valorGasto" placeholder="Valor R$">
+
+<button onclick="adicionarGasto()">Adicionar</button>
+
+</div>
+
+<div class="card">
+
+<h2>Gastos</h2>
+
+<ul id="listaGastos"></ul>
+
+</div>
+
+</div>
+
+<script>
+
+let entregas = []
+let gastos = []
+
+function adicionarEntrega(){
+
+let cliente = document.getElementById("cliente").value
+let origem = document.getElementById("origem").value
+let destino = document.getElementById("destino").value
+let valor = document.getElementById("valor").value
+
+if(cliente == "" || valor == "") return
+
+entregas.push({cliente, origem, destino, valor})
+
+renderEntregas()
+
+}
+
+function renderEntregas(){
+
+let tabela = document.getElementById("listaEntregas")
+
+tabela.innerHTML = ""
+
+entregas.forEach((e,i)=>{
+
+tabela.innerHTML += `
+<tr>
+<td>${e.cliente}</td>
+<td>${e.origem}</td>
+<td>${e.destino}</td>
+<td>R$ ${e.valor}</td>
+<td><button onclick="removerEntrega(${i})">Excluir</button></td>
+</tr>
+`
+
+})
+
+}
+
+function removerEntrega(i){
+
+entregas.splice(i,1)
+
+renderEntregas()
+
+}
+
+function adicionarGasto(){
+
+let tipo = document.getElementById("tipoGasto").value
+let valor = document.getElementById("valorGasto").value
+
+if(tipo == "" || valor == "") return
+
+gastos.push({tipo,valor})
+
+renderGastos()
+
+}
+
+function renderGastos(){
+
+let lista = document.getElementById("listaGastos")
+
+lista.innerHTML = ""
+
+gastos.forEach(g=>{
+
+lista.innerHTML += `<li>${g.tipo} - R$ ${g.valor}</li>`
+
+})
+
+}
+
+</script>
 
 </body>
 
