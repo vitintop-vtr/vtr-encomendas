@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>VTR ENCOMENDAS | Sistema</title>
+<title>VTR ENCOMENDAS</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -15,7 +15,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-font-family:Segoe UI,Arial;
+font-family:Segoe UI;
 background:#0f172a;
 color:#fff;
 }
@@ -95,25 +95,6 @@ margin-right:3px;
 background:rgba(34,197,94,0.2);
 }
 
-.devedores-painel{padding:15px;border-radius:12px;margin-bottom:20px;}
-
-.painel-vermelho{
-background:rgba(220,38,38,0.15);
-border:1px solid rgba(220,38,38,0.4);
-}
-
-.painel-verde{
-background:rgba(34,197,94,0.15);
-border:1px solid rgba(34,197,94,0.4);
-}
-
-.table-section{
-background:rgba(255,255,255,0.07);
-padding:20px;
-border-radius:14px;
-overflow-x:auto;
-}
-
 table{
 width:100%;
 border-collapse:collapse;
@@ -142,31 +123,23 @@ font-size:12px;
 
 <div class="card">
 <h4>Faturamento</h4>
-<span id="fat">R$ 0,00</span>
+<span id="fat">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Gastos</h4>
-<span id="gast">R$ 0,00</span>
+<span id="gast">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Lucro</h4>
-<span id="lucro">R$ 0,00</span>
+<span id="lucro">R$ 0</span>
 </div>
 
 <div class="card">
 <h4>Devedores</h4>
 <span id="totalDev">0</span>
 </div>
-
-</div>
-
-<div id="painelDev" class="devedores-painel painel-verde">
-
-<h4 id="tituloDev">✅ Nenhum devedor</h4>
-
-<div id="listaDev"></div>
 
 </div>
 
@@ -179,9 +152,7 @@ font-size:12px;
 <select id="clienteSelect"></select>
 
 <input id="origem" placeholder="Origem">
-
 <input id="destino" placeholder="Destino">
-
 <input id="valor" type="number" placeholder="Valor">
 
 <textarea id="obs" placeholder="Observações"></textarea>
@@ -192,66 +163,30 @@ font-size:12px;
 
 <div class="module">
 
-<h4>Cadastro Clientes</h4>
+<h4>Clientes</h4>
 
-<input id="novoCliente" placeholder="Nome Cliente">
+<input id="novoCliente" placeholder="Nome cliente">
 
-<select id="clienteExcluir"></select>
-
-<button onclick="salvarCliente()">Salvar Cliente</button>
-
-<button onclick="excluirCliente()">Excluir Cliente</button>
-
-</div>
-
-<div class="module">
-
-<h4>Gastos</h4>
-
-<select id="tipoGasto">
-<option>Combustível</option>
-<option>Manutenção</option>
-<option>Alimentação</option>
-<option>Outros</option>
-</select>
-
-<input id="valorGasto" type="number" placeholder="Valor">
-
-<button onclick="salvarGasto()">Adicionar Gasto</button>
-
-</div>
-
-<div class="module">
-
-<h4>Devedores</h4>
-
-<input id="nomeDev" placeholder="Nome">
-
-<input id="valorDev" type="number" placeholder="Valor">
-
-<button onclick="salvarDevedor()">Adicionar</button>
+<button onclick="salvarCliente()">Salvar</button>
 
 </div>
 
 </div>
 
-<div class="module" style="margin-bottom:20px;">
-
-<h4>Relatório</h4>
+<div>
 
 <button onclick="gerarRelatorio()">Gerar Relatório PDF</button>
 
 </div>
 
-<div class="table-section">
-
-<h4>Movimentações</h4>
+<br>
 
 <table>
 
 <thead>
 
 <tr>
+
 <th>Data</th>
 <th>Cliente</th>
 <th>Origem</th>
@@ -259,6 +194,7 @@ font-size:12px;
 <th>Valor</th>
 <th>Obs</th>
 <th>Ação</th>
+
 </tr>
 
 </thead>
@@ -266,8 +202,6 @@ font-size:12px;
 <tbody id="tabela"></tbody>
 
 </table>
-
-</div>
 
 </div>
 
@@ -300,7 +234,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let registros=[];
-let devedores=[];
 
 async function salvarEntrega(){
 
@@ -348,9 +281,12 @@ registros=[];
 const q=await getDocs(collection(db,"registros"));
 
 q.forEach(doc=>{
+
 let r=doc.data();
 r.id=doc.id;
+
 registros.push(r);
+
 });
 
 registros.sort((a,b)=>a.cliente.localeCompare(b.cliente));
@@ -361,20 +297,16 @@ atualizar();
 
 function atualizar(){
 
-let f=0,g=0;
-
 tabela.innerHTML="";
 
 registros.forEach(r=>{
-
-if(r.valor>0)f+=r.valor;
-if(r.valor<0)g+=Math.abs(r.valor);
 
 let classe=r.pago?"pago-linha":"";
 
 tabela.innerHTML+=`
 
 <tr class="${classe}">
+
 <td>${r.data}</td>
 <td>${r.cliente}</td>
 <td>${r.origem}</td>
@@ -383,8 +315,10 @@ tabela.innerHTML+=`
 <td>${r.obs}</td>
 
 <td>
+
 <button class="small pago" onclick="marcarPago('${r.id}')">PAGO</button>
 <button class="small excluir" onclick="excluirRegistro('${r.id}')">Excluir</button>
+
 </td>
 
 </tr>
@@ -393,85 +327,93 @@ tabela.innerHTML+=`
 
 });
 
-fat.innerText="R$ "+f.toFixed(2);
-gast.innerText="R$ "+g.toFixed(2);
-lucro.innerText="R$ "+(f-g).toFixed(2);
-
 }
 
 function gerarRelatorio(){
 
 const { jsPDF } = window.jspdf;
+
 const doc = new jsPDF();
 
 let y = 20;
 
-doc.setFontSize(16);
+doc.setFontSize(12);
 doc.text("RELATÓRIO VTR ENCOMENDAS",20,10);
 
-doc.setFontSize(11);
-
-let ordenado=[...registros].sort((a,b)=>a.cliente.localeCompare(b.cliente));
+doc.setFontSize(8);
 
 let empresas={};
 let faturamento=0;
 let gastos=0;
 let entregas=0;
 
-ordenado.forEach(r=>{
+registros.forEach(r=>{
 
-let linha=`${r.data} - ENTREGA ${r.cliente} - ${r.destino} - R$ ${Math.abs(r.valor).toFixed(2)} - (OBS: ${r.obs || "-"})`;
+let texto=`${r.data} - ENTREGA ${r.cliente} - ${r.destino} - R$ ${Math.abs(r.valor).toFixed(2)} - (OBS: ${r.obs || "-"})`;
 
-doc.text(linha,10,y);
-y+=7;
+let linhas=doc.splitTextToSize(texto,180);
+
+doc.text(linhas,10,y);
+
+y+=linhas.length*4;
 
 if(r.valor>0){
 
 faturamento+=r.valor;
 entregas++;
 
-if(!empresas[r.cliente])empresas[r.cliente]={total:0,qtd:0};
+if(!empresas[r.cliente])
+empresas[r.cliente]={total:0,qtd:0};
 
 empresas[r.cliente].total+=r.valor;
 empresas[r.cliente].qtd++;
 
 }else{
+
 gastos+=Math.abs(r.valor);
+
+}
+
+if(y>270){
+doc.addPage();
+y=20;
 }
 
 });
 
 y+=10;
 
-doc.setFontSize(14);
+doc.setFontSize(11);
 doc.text("TOTAL POR EMPRESA",20,y);
-y+=10;
+
+y+=6;
+
+doc.setFontSize(9);
 
 for(let e in empresas){
 
 doc.text(`${e} - Entregas: ${empresas[e].qtd} - Total: R$ ${empresas[e].total.toFixed(2)}`,20,y);
 
-y+=7;
+y+=5;
 
 }
 
-y+=10;
+y+=8;
 
 doc.text("RESUMO FINAL",20,y);
-y+=10;
 
-doc.setFontSize(12);
+y+=6;
 
-doc.text(`TOTAL DE ENTREGAS: ${entregas}`,20,y);
-y+=7;
+doc.text(`TOTAL ENTREGAS: ${entregas}`,20,y);
+y+=5;
 
-doc.text(`FATURAMENTO TOTAL: R$ ${faturamento.toFixed(2)}`,20,y);
-y+=7;
+doc.text(`FATURAMENTO: R$ ${faturamento.toFixed(2)}`,20,y);
+y+=5;
 
-doc.text(`TOTAL DE GASTOS: R$ ${gastos.toFixed(2)}`,20,y);
-y+=7;
+doc.text(`GASTOS: R$ ${gastos.toFixed(2)}`,20,y);
+y+=5;
 
-doc.text(`LUCRO FINAL: R$ ${(faturamento-gastos).toFixed(2)}`,20,y);
+doc.text(`LUCRO: R$ ${(faturamento-gastos).toFixed(2)}`,20,y);
 
 doc.save("RELATORIO_VTR_ENCOMENDAS.pdf");
 
@@ -483,9 +425,9 @@ if(e.key==="Enter"){
 
 let ativo=document.activeElement;
 
-if(["origem","destino","valor","obs"].includes(ativo.id))salvarEntrega();
-if(ativo.id==="valorGasto")salvarGasto();
-if(ativo.id==="valorDev")salvarDevedor();
+if(["origem","destino","valor","obs"].includes(ativo.id)){
+salvarEntrega();
+}
 
 }
 
@@ -494,8 +436,8 @@ if(ativo.id==="valorDev")salvarDevedor();
 carregar();
 
 window.salvarEntrega=salvarEntrega;
-window.excluirRegistro=excluirRegistro;
 window.marcarPago=marcarPago;
+window.excluirRegistro=excluirRegistro;
 window.gerarRelatorio=gerarRelatorio;
 
 </script>
