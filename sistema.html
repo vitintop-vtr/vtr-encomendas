@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>VTR ENCOMENDAS</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
+*{margin:0;padding:0;box-sizing:border-box;}
+
 body{
 font-family:Segoe UI;
 background:#0f172a;
 color:white;
-margin:0;
 }
 
-.app{max-width:1400px;margin:auto;padding:30px;}
+.app{
+max-width:1400px;
+margin:auto;
+padding:30px;
+}
 
 .header{text-align:center;margin-bottom:30px;}
 .header img{height:120px;}
@@ -118,38 +126,67 @@ font-size:12px;
 </div>
 
 <div class="dashboard">
-<div class="card"><h4>Faturamento</h4><span id="fat">R$ 0</span></div>
-<div class="card"><h4>Gastos</h4><span id="gast">R$ 0</span></div>
-<div class="card"><h4>Lucro</h4><span id="lucro">R$ 0</span></div>
-<div class="card"><h4>Devedores</h4><span id="totalDev">0</span></div>
+
+<div class="card">
+<h4>Faturamento</h4>
+<span id="fat">R$ 0</span>
+</div>
+
+<div class="card">
+<h4>Gastos</h4>
+<span id="gast">R$ 0</span>
+</div>
+
+<div class="card">
+<h4>Lucro</h4>
+<span id="lucro">R$ 0</span>
+</div>
+
+<div class="card">
+<h4>Devedores</h4>
+<span id="totalDev">0</span>
+</div>
+
 </div>
 
 <div id="painelDev" class="devedores-painel painel-verde">
+
 <h4 id="tituloDev">Nenhum devedor</h4>
+
 <div id="listaDev"></div>
+
 </div>
 
 <div class="modules">
 
 <div class="module">
+
 <h4>Nova Entrega</h4>
 
 <select id="clienteSelect"></select>
+
 <input id="origem" placeholder="Origem">
 <input id="destino" placeholder="Destino">
 <input id="valor" type="number" placeholder="Valor">
+
 <textarea id="obs" placeholder="Observações"></textarea>
 
 <button onclick="salvarEntrega()">Salvar</button>
+
 </div>
 
 <div class="module">
+
 <h4>Clientes</h4>
+
 <input id="novoCliente" placeholder="Nome cliente">
+
 <button onclick="salvarCliente()">Salvar</button>
+
 </div>
 
 <div class="module">
+
 <h4>Gastos</h4>
 
 <select id="tipoGasto">
@@ -160,11 +197,13 @@ font-size:12px;
 </select>
 
 <input id="valorGasto" type="number" placeholder="Valor">
+
 <button onclick="salvarGasto()">Adicionar gasto</button>
 
 </div>
 
 <div class="module">
+
 <h4>Devedores</h4>
 
 <input id="nomeDev" placeholder="Nome">
@@ -183,7 +222,9 @@ font-size:12px;
 <table>
 
 <thead>
+
 <tr>
+
 <th>Data</th>
 <th>Cliente</th>
 <th>Origem</th>
@@ -191,7 +232,9 @@ font-size:12px;
 <th>Valor</th>
 <th>Obs</th>
 <th>Ação</th>
+
 </tr>
+
 </thead>
 
 <tbody id="tabela"></tbody>
@@ -221,28 +264,20 @@ let registros=[];
 let devedores=[];
 
 async function carregarClientes(){
-
 clienteSelect.innerHTML="";
-
 const q=await getDocs(collection(db,"clientes"));
-
 q.forEach(docu=>{
 clienteSelect.innerHTML+=`<option>${docu.data().nome}</option>`;
 });
-
 }
 
 async function salvarCliente(){
-
 await addDoc(collection(db,"clientes"),{nome:novoCliente.value});
-
 novoCliente.value="";
 carregarClientes();
-
 }
 
 async function salvarEntrega(){
-
 await addDoc(collection(db,"registros"),{
 data:new Date().toLocaleDateString("pt-BR"),
 cliente:clienteSelect.value,
@@ -252,18 +287,14 @@ valor:parseFloat(valor.value),
 obs:obs.value,
 pago:false
 });
-
 origem.value="";
 destino.value="";
 valor.value="";
 obs.value="";
-
 carregar();
-
 }
 
 async function salvarGasto(){
-
 await addDoc(collection(db,"registros"),{
 data:new Date().toLocaleDateString("pt-BR"),
 cliente:"Gasto "+tipoGasto.value,
@@ -272,10 +303,8 @@ destino:"-",
 valor:-Math.abs(parseFloat(valorGasto.value)),
 obs:"-"
 });
-
 valorGasto.value="";
 carregar();
-
 }
 
 async function salvarDevedor(){
@@ -300,65 +329,47 @@ let novo=encontrado.valor+valor;
 
 await deleteDoc(doc(db,"devedores",encontrado.id));
 
-await addDoc(collection(db,"devedores"),{
-nome:nome,
-valor:novo
-});
+await addDoc(collection(db,"devedores"),{nome:nome,valor:novo});
 
 }else{
 
-await addDoc(collection(db,"devedores"),{
-nome:nome,
-valor:valor
-});
+await addDoc(collection(db,"devedores"),{nome:nome,valor:valor});
 
 }
 
 nomeDev.value="";
 valorDev.value="";
-
 carregarDevedores();
-
 }
 
 async function excluirDevedor(id){
-
 await deleteDoc(doc(db,"devedores",id));
 carregarDevedores();
-
 }
 
 async function carregarDevedores(){
 
 devedores=[];
-
 const q=await getDocs(collection(db,"devedores"));
-
 listaDev.innerHTML="";
 
 q.forEach(docu=>{
-
 let d=docu.data();
 
 listaDev.innerHTML+=`${d.nome} - R$ ${d.valor.toFixed(2)}
 <button class="small excluir" onclick="excluirDevedor('${docu.id}')">Excluir</button><br>`;
 
 devedores.push(d);
-
 });
 
 totalDev.innerText=devedores.length;
 
 if(devedores.length==0){
-
 painelDev.className="devedores-painel painel-verde";
 tituloDev.innerText="Nenhum devedor";
-
 }else{
-
 painelDev.className="devedores-painel painel-vermelho";
 tituloDev.innerText="Devedores em aberto";
-
 }
 
 }
@@ -366,7 +377,6 @@ tituloDev.innerText="Devedores em aberto";
 async function carregar(){
 
 registros=[];
-
 const q=await getDocs(collection(db,"registros"));
 
 q.forEach(docu=>{
@@ -378,7 +388,6 @@ registros.push(r);
 registros.sort((a,b)=>a.cliente.localeCompare(b.cliente));
 
 atualizar();
-
 }
 
 function atualizar(){
@@ -415,72 +424,103 @@ tabela.innerHTML+=`
 fat.innerText="R$ "+faturamento.toFixed(2);
 gast.innerText="R$ "+gastos.toFixed(2);
 lucro.innerText="R$ "+(faturamento-gastos).toFixed(2);
-
 }
 
 async function marcarPago(id){
-
 await updateDoc(doc(db,"registros",id),{pago:true});
 carregar();
-
 }
 
 async function excluirRegistro(id){
-
 await deleteDoc(doc(db,"registros",id));
 carregar();
-
 }
 
 function gerarRelatorio(){
 
 const { jsPDF }=window.jspdf;
 
-const doc=new jsPDF();
+const doc=new jsPDF({orientation:"landscape"});
 
-let y=20;
+let y=15;
+
+doc.setFontSize(14);
+doc.text("RELATÓRIO VTR ENCOMENDAS",15,y);
+
+y+=10;
 
 doc.setFontSize(10);
 
+let empresas={};
+let faturamento=0;
+let gastos=0;
+let entregas=0;
+
 registros.forEach(r=>{
 
-let texto=`${r.data} - ENTREGA ${r.cliente} - ${r.destino} - R$ ${Math.abs(r.valor).toFixed(2)} - (OBS: ${r.obs||"-"})`;
+let linha=`${r.data} - ENTREGA ${r.cliente} - ${r.destino} - R$ ${Math.abs(r.valor).toFixed(2)} - (OBS: ${r.obs||"-"})`;
 
-let linhas=doc.splitTextToSize(texto,180);
+doc.text(linha,15,y);
 
-doc.text(linhas,10,y);
+y+=6;
 
-y+=linhas.length*4;
-
-if(y>270){
+if(y>190){
 doc.addPage();
-y=20;
+y=15;
+}
+
+if(r.valor>0){
+
+faturamento+=r.valor;
+entregas++;
+
+if(!empresas[r.cliente])empresas[r.cliente]={total:0,qtd:0};
+
+empresas[r.cliente].total+=r.valor;
+empresas[r.cliente].qtd++;
+
+}else{
+
+gastos+=Math.abs(r.valor);
+
 }
 
 });
+
+y+=10;
+
+doc.setFontSize(12);
+doc.text("TOTAL POR EMPRESA",15,y);
+
+y+=8;
+
+doc.setFontSize(10);
+
+for(let e in empresas){
+
+doc.text(`${e} - Entregas: ${empresas[e].qtd} - Total: R$ ${empresas[e].total.toFixed(2)}`,15,y);
+
+y+=6;
+
+}
+
+y+=10;
+
+doc.setFontSize(12);
+doc.text("RESUMO FINAL",15,y);
+
+y+=8;
+
+doc.setFontSize(10);
+
+doc.text(`TOTAL DE ENTREGAS: ${entregas}`,15,y); y+=6;
+doc.text(`FATURAMENTO TOTAL: R$ ${faturamento.toFixed(2)}`,15,y); y+=6;
+doc.text(`TOTAL DE GASTOS: R$ ${gastos.toFixed(2)}`,15,y); y+=6;
+doc.text(`LUCRO FINAL: R$ ${(faturamento-gastos).toFixed(2)}`,15,y);
 
 doc.save("RELATORIO_VTR_ENCOMENDAS.pdf");
 
 }
-
-document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-
-let ativo=document.activeElement;
-
-if(["origem","destino","valor","obs"].includes(ativo.id))
-salvarEntrega();
-
-if(ativo.id==="valorGasto")
-salvarGasto();
-
-if(ativo.id==="valorDev")
-salvarDevedor();
-
-}
-
-});
 
 carregar();
 carregarClientes();
