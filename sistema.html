@@ -26,14 +26,8 @@ margin:auto;
 padding:30px;
 }
 
-.header{
-text-align:center;
-margin-bottom:30px;
-}
-
-.header img{
-height:150px;
-}
+.header{text-align:center;margin-bottom:30px;}
+.header img{height:150px;}
 
 .dashboard{
 display:grid;
@@ -62,9 +56,7 @@ padding:20px;
 border-radius:14px;
 }
 
-.module input,
-.module select,
-.module textarea{
+.module input,.module select,.module textarea{
 width:100%;
 padding:8px;
 margin-bottom:8px;
@@ -74,10 +66,7 @@ background:rgba(255,255,255,0.1);
 color:#fff;
 }
 
-.module textarea{
-height:60px;
-resize:none;
-}
+.module textarea{height:60px;}
 
 .module button{
 width:100%;
@@ -87,7 +76,7 @@ border-radius:8px;
 background:#2563eb;
 color:#fff;
 cursor:pointer;
-margin-bottom:6px;
+margin-bottom:5px;
 }
 
 button.small{
@@ -99,11 +88,7 @@ border-radius:6px;
 color:#fff;
 }
 
-.devedores-painel{
-padding:15px;
-border-radius:12px;
-margin-bottom:20px;
-}
+.devedores-painel{padding:15px;border-radius:12px;margin-bottom:20px;}
 
 .painel-vermelho{
 background:rgba(220,38,38,0.15);
@@ -245,6 +230,14 @@ font-size:12px;
 
 </div>
 
+<div class="module" style="margin-bottom:20px;">
+
+<h4>Relatório</h4>
+
+<button onclick="gerarRelatorio()">Gerar Relatório PDF</button>
+
+</div>
+
 <div class="table-section">
 
 <h4>Movimentações</h4>
@@ -318,8 +311,6 @@ async function excluirCliente(){
 
 let id = clienteExcluir.value;
 
-if(!id) return;
-
 await deleteDoc(doc(db,"clientes",id));
 
 carregarClientes();
@@ -362,12 +353,42 @@ carregar();
 
 async function salvarDevedor(){
 
-await addDoc(collection(db,"devedores"),{
+let nome = nomeDev.value.trim();
+let valor = parseFloat(valorDev.value);
 
-nome:nomeDev.value,
-valor:parseFloat(valorDev.value)
+const q = await getDocs(collection(db,"devedores"));
 
+let encontrado = null;
+
+q.forEach(docu=>{
+let d = docu.data();
+if(d.nome.toLowerCase() === nome.toLowerCase()){
+encontrado = {id:docu.id, valor:d.valor};
+}
 });
+
+if(encontrado){
+
+let novoValor = encontrado.valor + valor;
+
+await deleteDoc(doc(db,"devedores",encontrado.id));
+
+await addDoc(collection(db,"devedores"),{
+nome:nome,
+valor:novoValor
+});
+
+}else{
+
+await addDoc(collection(db,"devedores"),{
+nome:nome,
+valor:valor
+});
+
+}
+
+nomeDev.value="";
+valorDev.value="";
 
 carregarDevedores();
 
@@ -419,7 +440,6 @@ q.forEach(doc=>{
 let nome=doc.data().nome;
 
 clienteSelect.innerHTML+=`<option>${nome}</option>`;
-
 clienteExcluir.innerHTML+=`<option value="${doc.id}">${nome}</option>`;
 
 });
@@ -496,6 +516,37 @@ lucro.innerText="R$ "+(f-g).toFixed(2);
 
 }
 
+function gerarRelatorio(){
+
+const {jsPDF}=window.jspdf;
+
+const doc=new jsPDF();
+
+let y=20;
+
+doc.text("RELATÓRIO VTR ENCOMENDAS",20,10);
+
+registros.forEach(r=>{
+
+doc.text(
+r.data+" | "+r.cliente+" | "+r.origem+" → "+r.destino+" | R$ "+r.valor.toFixed(2),
+20,
+y
+);
+
+y+=7;
+
+if(y>270){
+doc.addPage();
+y=20;
+}
+
+});
+
+doc.save("RELATORIO_VTR_ENCOMENDAS.pdf");
+
+}
+
 carregar();
 carregarClientes();
 carregarDevedores();
@@ -507,6 +558,7 @@ window.salvarGasto=salvarGasto;
 window.salvarDevedor=salvarDevedor;
 window.excluirRegistro=excluirRegistro;
 window.excluirDevedor=excluirDevedor;
+window.gerarRelatorio=gerarRelatorio;
 
 </script>
 
