@@ -173,13 +173,9 @@ font-size:12px;
 
 </div>
 
-<div>
-
 <button onclick="gerarRelatorio()">Gerar Relatório PDF</button>
 
-</div>
-
-<br>
+<br><br>
 
 <table>
 
@@ -234,6 +230,39 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let registros=[];
+let clientes=[];
+
+async function carregarClientes(){
+
+clienteSelect.innerHTML="";
+
+const q=await getDocs(collection(db,"clientes"));
+
+q.forEach(docu=>{
+
+let d=docu.data();
+
+clienteSelect.innerHTML+=`<option>${d.nome}</option>`;
+
+clientes.push(d.nome);
+
+});
+
+}
+
+async function salvarCliente(){
+
+await addDoc(collection(db,"clientes"),{
+
+nome:novoCliente.value
+
+});
+
+novoCliente.value="";
+
+carregarClientes();
+
+}
 
 async function salvarEntrega(){
 
@@ -280,10 +309,11 @@ registros=[];
 
 const q=await getDocs(collection(db,"registros"));
 
-q.forEach(doc=>{
+q.forEach(docu=>{
 
-let r=doc.data();
-r.id=doc.id;
+let r=docu.data();
+
+r.id=docu.id;
 
 registros.push(r);
 
@@ -297,9 +327,15 @@ atualizar();
 
 function atualizar(){
 
+let fat=0;
+let gast=0;
+
 tabela.innerHTML="";
 
 registros.forEach(r=>{
+
+if(r.valor>0)fat+=r.valor;
+if(r.valor<0)gast+=Math.abs(r.valor);
 
 let classe=r.pago?"pago-linha":"";
 
@@ -327,6 +363,10 @@ tabela.innerHTML+=`
 
 });
 
+fat.innerText="R$ "+fat.toFixed(2);
+gast.innerText="R$ "+gast.toFixed(2);
+lucro.innerText="R$ "+(fat-gast).toFixed(2);
+
 }
 
 function gerarRelatorio(){
@@ -335,10 +375,11 @@ const { jsPDF } = window.jspdf;
 
 const doc = new jsPDF();
 
-let y = 20;
+let y=20;
 
 doc.setFontSize(12);
-doc.text("RELATÓRIO VTR ENCOMENDAS",20,10);
+
+doc.text("RELATORIO VTR ENCOMENDAS",20,10);
 
 doc.setFontSize(8);
 
@@ -375,45 +416,14 @@ gastos+=Math.abs(r.valor);
 }
 
 if(y>270){
+
 doc.addPage();
+
 y=20;
+
 }
 
 });
-
-y+=10;
-
-doc.setFontSize(11);
-doc.text("TOTAL POR EMPRESA",20,y);
-
-y+=6;
-
-doc.setFontSize(9);
-
-for(let e in empresas){
-
-doc.text(`${e} - Entregas: ${empresas[e].qtd} - Total: R$ ${empresas[e].total.toFixed(2)}`,20,y);
-
-y+=5;
-
-}
-
-y+=8;
-
-doc.text("RESUMO FINAL",20,y);
-
-y+=6;
-
-doc.text(`TOTAL ENTREGAS: ${entregas}`,20,y);
-y+=5;
-
-doc.text(`FATURAMENTO: R$ ${faturamento.toFixed(2)}`,20,y);
-y+=5;
-
-doc.text(`GASTOS: R$ ${gastos.toFixed(2)}`,20,y);
-y+=5;
-
-doc.text(`LUCRO: R$ ${(faturamento-gastos).toFixed(2)}`,20,y);
 
 doc.save("RELATORIO_VTR_ENCOMENDAS.pdf");
 
@@ -425,17 +435,18 @@ if(e.key==="Enter"){
 
 let ativo=document.activeElement;
 
-if(["origem","destino","valor","obs"].includes(ativo.id)){
+if(["origem","destino","valor","obs"].includes(ativo.id))
 salvarEntrega();
-}
 
 }
 
 });
 
 carregar();
+carregarClientes();
 
 window.salvarEntrega=salvarEntrega;
+window.salvarCliente=salvarCliente;
 window.marcarPago=marcarPago;
 window.excluirRegistro=excluirRegistro;
 window.gerarRelatorio=gerarRelatorio;
